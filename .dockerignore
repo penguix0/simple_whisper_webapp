@@ -4,7 +4,19 @@ __pycache__/
 venv/
 .vscode/
 
-database.db
-*.m4a
+# Ignore general files and directories
+.git
+.github
+data
+.vscode
+*.pyc
+*.pyo
+
+# Ignore __pycache__ folders
+**/__pycache__
+
+
+**/database.db
+**.m4a
 *.mp3
 *.wav
