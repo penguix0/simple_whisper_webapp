@@ -9,7 +9,7 @@ Deployment of the program is made possible by [Docker](https://www.docker.com/) 
 
 The main user interface:
 ![screenshot of main user interface](image/screenshot.png)
-
+![status screenshot](image/status.png)
 ## Running the program from source code
 ```bash
 docker compose up -d --no-deps --build simple_whisper_web --force-recreate      
