@@ -8,7 +8,7 @@ The underlying technology facilitating this functionality is a combination of [f
 Deployment of the program is made possible by [Docker](https://www.docker.com/) and [gunicorn](https://gunicorn.org/). Gunicorn serves the Flask web application. Gunicorn boosts the performance of the application significantly, as to accommodate a larger number of clients. Docker is used to deploy the program. Instructions for utilizing the program are outlined below.
 
 The main user interface:
-[Image](image/screenshot.png)
+![[image/screenshot.png]]
 
 ## Running the program from source code
 ```bash
