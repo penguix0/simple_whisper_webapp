@@ -1,8 +1,18 @@
-## Run the image
+# Simple Whisper Webapp
+This application is designed for older or less tech-savy individiuals who wish to use Whisper transcription technology. Notably, the application operates entirely offline, eleminating the need for any internet connection. This means that no data is send to the web. This offline-first approach provides a distinct advantage as sensitive data is not transmitted to external servers. The data exchange occurs directly between the server and the client.
+
+To initiate the connection, the client simply enters the IP address of the server into a web browser. Subsequently, the client uploads an audio file to the server. The server promptly sores the file and initiates the processing of the audio to text conversion. Once the file has been successfully processed, it is immediately deleted from the server, enhancing data security. The text output, can be deleted by the user at their own will by clicking the remove button in the web interface. 
+
+The underlying technology facilitating this functionality is a combination of [faster_whisper](https://github.com/SYSTRAN/faster-whisper) and [Flask](https://flask.palletsprojects.com/en/3.0.x/). Flask serves as the web framework for the Python programming language, providing a robust foundation for building web applications. Faster_whisper, on the other hand, is an optimized implementation of OpenAI's Whisper, delivering superior performance on CPU based inference.
+
+Deployment of the program is made possible by [Docker](https://www.docker.com/) and [gunicorn](https://gunicorn.org/). Gunicorn serves the Flask web application. Gunicorn boosts the performance of the application significantly, as to accommodate a larger number of clients. Docker is used to deploy the program. Instructions for utilizing the program are outlined below.
+
+
+## Running the program from source code
 ```bash
 docker compose up -d --no-deps --build simple_whisper_web --force-recreate      
 ```
-With the following docker-compose.yml file:
+And then use the following docker-compose.yml file:
 ```
 version: '3'
 services:
@@ -17,12 +27,12 @@ services:
       - FLASK_DEBUG=false
 ```
 
-## Instead you can also pull the image:
+## It is also possible to pull the image from Docker Hub:
 ```
 version: '3'
 services:
   simple_whisper_web:
-    image: arnecuperus/simple_whisper_webapp:latest
+    image: arnecuperus/simple_whisper_webapp:v1.0.4
     container_name: simple_whisper_web
     ports:
       - "9999:9999"
@@ -30,9 +40,15 @@ services:
       - GUNICORN_THREADS=2
       - USE_GPU=false
       - FLASK_DEBUG=false
+      - MODEL_SIZE=large-v2
+    volumes:
+      - ./data:/data
+    restart: unless-stopped
 ```
 
-Here are the steps to publish the image:
+## Publishing the Docker image:
+
+The program gets published by executing the following steps. 'v1.0.0' gets replaced with the correct version number.
 
 ## Build the Docker image:
 
@@ -56,9 +72,4 @@ docker login
 
 ```bash
 docker push arnecuperus/simple_whisper_webapp:v1.0.0
-```
-
-
-```bash
-docker pull arnecuperus/simple_whisper_webapp:v1.0.0
 ```
