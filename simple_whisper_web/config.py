@@ -15,5 +15,5 @@ MODEL_PATH = "/data/models/"
 DATABASE_FOLDER = "/data/database"
 ALLOWED_EXTENSIONS = {'mp3', 'm4a'}
 DATABASE_FILENAME = "database.db"
-MODEL_SIZE = "medium"
+MODEL_SIZE = environ.get('MODEL_SIZE', 'medium')
 USE_GPU = environ.get('USE_GPU', '').lower() == 'true' if environ.get('USE_GPU', '').lower() else False

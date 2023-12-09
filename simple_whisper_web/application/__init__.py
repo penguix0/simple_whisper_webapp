@@ -1,5 +1,5 @@
 from flask import Flask
-from os import path, remove
+from os import path, remove, makedirs
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.sql import func
 import logging
@@ -26,6 +26,10 @@ app.config.from_pyfile(path.join(parent_dir, 'config.py'))
 logger.info(f'Created Flask app, debug is set to {app.config["DEBUG"]}')
 
 ## Init database
+if not path.exists(app.config["DATABASE_FOLDER"]):
+    logger.info("Database folder does not exist, creating it now")
+    makedirs(app.config["DATABASE_FOLDER"])
+
 app.config['SQLALCHEMY_DATABASE_URI'] =\
         'sqlite:///' + path.join(app.config["DATABASE_FOLDER"], app.config["DATABASE_FILENAME"])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -61,8 +65,12 @@ db.session.commit()
 
 from .helper import remove_files_in_relative_directory
 
-logger.info("Cleaning files from previous boot:")
-remove_files_in_relative_directory(app.config["UPLOAD_FOLDER"])
+if not path.exists(app.config["UPLOAD_FOLDER"]):
+    logger.info("Upload folder does not exist, creating it now")
+    makedirs(app.config["UPLOAD_FOLDER"])
+else:
+    logger.info("Cleaning files from previous boot:")
+    remove_files_in_relative_directory(app.config["UPLOAD_FOLDER"])
 
 
 import threading
@@ -71,6 +79,9 @@ from .whisper.init_model import init_model
 from .helper import is_thread_running
 
 thread_name = "audio_transcription_thread"
+if not path.exists(app.config["MODEL_PATH"]):
+    logger.info("Model folder does not exist, creating it now")
+    makedirs(app.config["MODEL_PATH"])
 
 # Check if the thread is already running
 if not is_thread_running(thread_name):
