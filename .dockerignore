@@ -1,0 +1,10 @@
+/target
+.vscode/launch.json
+__pycache__/
+venv/
+.vscode/
+
+database.db
+*.m4a
+*.mp3
+*.wav

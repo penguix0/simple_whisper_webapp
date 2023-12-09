@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block header %}
+<title>Upload Page</title>
+{% endblock %}
+
+{% block body %}
+<div id="container">
+    <div id="upload-container">
+        <h1>Uploaded files:</h1>
+        <div id="prior-upload-container">
+            {% for file in files%}
+            <div class="upload-item" onclick="addQueryParam('selected_file', '{{ file.id }}')">
+                <div class="upload-item-text-container">
+                    <p class="upload-item-text">{{ file.file_name }}</p>
+                </div>
+                <div class="remove-item" onclick="removeAudioFile(event, '{{ file.id }}')">
+                    <span class="material-symbols-outlined uploaded-item-span notranslate" translate="no">
+                        close
+                    </span>
+                </div>
+            </div>
+            {% endfor %}
+            <form method="POST" enctype=multipart/form-data>
+                {{ file_form.hidden_tag() }}
+                {{ file_form.file(style="display: none;", id="file-input") }}
+                <input type="submit" id="file-submit" style="display: none;">
+                <div class="add-item" onclick="document.getElementById('file-input').click();">
+                    <span class="material-symbols-outlined notranslate" translate="no">
+                        add
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id="result-container">
+        {% if selected_file %}
+        <h1>{{ selected_file.name }}</h1>
+            {% if selected_file.result == None %}
+            <span id="queue-length-placeholder"></span>
+            {% else %}
+            <div class="result-text-container">
+                <p>{{ selected_file.result }}</p>
+            </div>
+            {% endif %}
+
+        {% else %}
+        <h1 style="word-break: normal;">Please select a file from the list on the left.</h1>
+        {% endif %}
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    let files = "{{ files }}";
+
+    // If file is selected, auto submit
+    $(document).ready(function () {
+        $('#file-input').change(function () {
+            // Check if a file is selected
+            if (this.files.length > 0) {
+                // Trigger click event on the submit button
+                $('#file-submit').click();
+            }
+        });
+    });
+    function removeAudioFile(event, fileId) {
+        // Stop the event propagation to parent elements
+        event.stopPropagation();
+        // Send an AJAX request to the /remove_audio_file route with the file_id parameter
+        $.ajax({
+            url: '/remove_audio_file',
+            type: 'GET',
+            data: { file_id: fileId },
+            success: function (response) {
+                // Handle the success response if needed
+                console.log('File removal successful:', response);
+                location.href = location.href;
+            },
+            error: function (error) {
+                // Handle the error response if needed
+                console.error('Error removing file:', error);
+            }
+        });
+    }
+    // Function to update que length
+    function updateQueueLength() {
+        // Make an AJAX request to your Flask endpoint
+        $.ajax({
+            url: '/get_queue_length',
+            type: 'GET',
+            success: function (response) {
+                // Check if que_length is defined in the response
+                if (response && response.queue_length !== undefined) {
+                    // Determine the appropriate text based on que_length
+                    let queueText;
+                    if (response.queue_length === 0) {
+                        queueText = 'Your the only one waiting, this file will be processed as soon as possible!';
+                    } else if (response.queue_length === 1) {
+                        queueText = 'There is currently one other file waiting in the queue.';
+                    } else {
+                        queueText = `There are currently ${response.queue_length} other files waiting in the queue.`;
+                    }
+
+                    // Update the content with the determined text
+                    $('#queue-length-placeholder').text(queueText);
+                } else {
+                    console.error('Invalid response format:', response);
+                }
+            },
+            error: function (error) {
+                console.error('Error getting queue length:', error);
+            }
+        });
+    }
+    var reload_on_finish = false;
+
+    function updateFileQueueStateOrLength() {
+        const file_id = "{{ selected_file.id }}"
+
+        // Make an AJAX request to the Flask endpoint
+        $.ajax({
+            url: '/get_file_queue_state',
+            type: 'GET',
+            data: { file_id: file_id },
+            success: function (response) {
+                // Check if is_being_processed is defined in the response
+                if (response && response.is_being_processed !== undefined) {
+                    // Update the content based on the file queue state
+                    const isBeingProcessed = response.is_being_processed === "true";
+                    const isFinished = response.finished === "true";
+                    const progress = response.progress;
+
+                    if (isFinished && reload_on_finish) {
+                        location.reload();
+                        // Update the content with the determined text
+                        $('#queue-length-placeholder').text("File is processed, please reload the page.");
+                    } else if (isBeingProcessed) {
+                        reload_on_finish = true;
+                        const queueStateText = 'This file is being processed. Currently at ' + progress + ' seconds.';
+
+                        // Update the content with the determined text
+                        $('#queue-length-placeholder').text(queueStateText);
+                    } else {    
+                        updateQueueLength();
+                    }
+                } else {
+                    console.error('Invalid response format:', response);
+                }
+            },
+            error: function (error) {
+                console.error('Error getting file queue state:', error);
+            }
+        });
+    }
+    function addQueryParam(key, value) {
+        // Check if the key is already present in the query string
+        var currentUrl = window.location.href;
+        var urlSearchParams = new URLSearchParams(window.location.search);
+
+        if (urlSearchParams.has(key)) {
+            // Replace the existing value
+            urlSearchParams.set(key, value);
+        } else {
+            // Add the new key and value
+            urlSearchParams.append(key, value);
+        }
+
+        // Construct the new URL
+        var newUrl = currentUrl.split('?')[0] + '?' + urlSearchParams.toString();
+
+        // Update the URL
+        window.history.replaceState({}, document.title, newUrl);
+
+        // Reload the page
+        location.reload();
+    }
+    // Initial update
+    updateFileQueueStateOrLength();
+
+    // Set interval to update every 10 seconds (10000 milliseconds)
+    setInterval(updateFileQueueStateOrLength, 5000);
+</script>
+
+{% endblock %}

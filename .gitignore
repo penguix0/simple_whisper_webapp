@@ -1,0 +1,12 @@
+/target
+.vscode/launch.json
+__pycache__
+venv/
+.vscode/
+
+*.db
+*.m4a
+*.mp3
+*.wav
+
+simple_whisper_web/data/models/*/

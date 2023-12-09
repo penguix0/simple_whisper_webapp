@@ -1,0 +1,11 @@
+version: '3'
+services:
+  simple_whisper_web:
+    container_name: simple_whisper_web
+    build: ./
+    ports:
+      - "9999:9999"
+    environment:
+      - GUNICORN_THREADS=2
+      - USE_GPU=false
+      - FLASK_DEBUG=false
