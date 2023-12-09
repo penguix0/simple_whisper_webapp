@@ -1,7 +1,7 @@
 version: '3'
 services:
   simple_whisper_web:
-    image: arnecuperus/simple_whisper_webapp:v1.0.0
+    image: arnecuperus/simple_whisper_webapp:v1.0.2
     container_name: simple_whisper_web
     ports:
       - "9999:9999"
@@ -9,3 +9,5 @@ services:
       - GUNICORN_THREADS=2
       - USE_GPU=false
       - FLASK_DEBUG=false
+    volumes:
+      - ./data:/data

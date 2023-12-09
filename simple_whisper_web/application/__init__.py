@@ -27,7 +27,7 @@ logger.info(f'Created Flask app, debug is set to {app.config["DEBUG"]}')
 
 ## Init database
 app.config['SQLALCHEMY_DATABASE_URI'] =\
-        'sqlite:///' + path.join(parent_dir, app.config["DATABASE_FOLDER"], app.config["DATABASE_FILENAME"])
+        'sqlite:///' + path.join(app.config["DATABASE_FOLDER"], app.config["DATABASE_FILENAME"])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 logger.info(f'Creating database object from file at {app.config["SQLALCHEMY_DATABASE_URI"]}.')
@@ -75,7 +75,7 @@ thread_name = "audio_transcription_thread"
 # Check if the thread is already running
 if not is_thread_running(thread_name):
     logger.info("Spawning transcription thread")
-    model = init_model(path.join(parent_dir, app.config["MODEL_PATH"]), app.config["USE_GPU"], app.config["MODEL_SIZE"])
+    model = init_model(app.config["MODEL_PATH"], app.config["USE_GPU"], app.config["MODEL_SIZE"])
     audio_transcription_thread = threading.Thread(target=audio_transcription_worker, args=(model,), name=thread_name)
     audio_transcription_thread.start()
     logger.debug("Transcription thread started")
