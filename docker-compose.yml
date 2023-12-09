@@ -1,7 +1,7 @@
 version: '3'
 services:
   simple_whisper_web:
-    image: arnecuperus/simple_whisper_webapp
+    image: arnecuperus/simple_whisper_webapp:v1.0.0
     container_name: simple_whisper_web
     ports:
       - "9999:9999"
@@ -9,12 +9,3 @@ services:
       - GUNICORN_THREADS=2
       - USE_GPU=false
       - FLASK_DEBUG=false
-  watchtower:
-    image: containrrr/watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /etc/localtime:/etc/localtime:ro
-    environment:
-      - WATCHTOWER_REMOVE_VOLUMES: "true"
-      - WATCHTOWER_INCLUDE_RESTARTING: "true"
-      - WATCHTOWER_SCHEDULE: 0 0 */14 * *
