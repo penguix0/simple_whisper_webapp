@@ -39,8 +39,11 @@
             <span id="queue-length-placeholder"></span>
             {% else %}
             <div class="result-text-container">
-                <p>{{ selected_file.result }}</p>
+                <p id="result-text-container">{{ selected_file.result }}</p>
             </div>
+            <span class="material-symbols-outlined" onclick="copyToClipboard()" id="copy-result">
+                content_copy
+            </span>
             {% endif %}
 
         {% else %}
@@ -179,6 +182,14 @@
 
     // Set interval to update every 10 seconds (10000 milliseconds)
     setInterval(updateFileQueueStateOrLength, 5000);
+
+    function copyToClipboard() {
+        // Get the text field
+        var copyText = document.getElementById("result-text-container");
+
+        // Copy the text inside the text field
+        navigator.clipboard.writeText(copyText.innerHTML);
+    } 
 </script>
 
 {% endblock %}
