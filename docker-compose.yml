@@ -10,6 +10,7 @@ services:
       - USE_GPU=false
       - FLASK_DEBUG=false
       - MODEL_SIZE=large-v2
+      - EXPIRE_TIME=6
     volumes:
       - ./data:/data
     restart: unless-stopped

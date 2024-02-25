@@ -67,6 +67,7 @@ db.create_all()
 db.session.query(AudioFile).delete()
 db.session.commit()
 
+logger.info(f'Audio files will get deleted in {app.config["EXPIRE_TIME"]} day(s) from creation.')
 
 from .helper import remove_files_in_relative_directory
 
