@@ -34,7 +34,7 @@ services:
 version: '3'
 services:
   simple_whisper_web:
-    image: arnecuperus/simple_whisper_webapp:v1.0.4
+    image: arnecuperus/simple_whisper_webapp:latest
     container_name: simple_whisper_web
     ports:
       - "9999:9999"
