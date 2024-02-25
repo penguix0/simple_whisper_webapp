@@ -35,6 +35,7 @@
     <div id="result-container">
         {% if selected_file %}
         <h1>{{ selected_file.name }}</h1>
+        <h2>Verloopt om {{ selected_file.expiry_date }}</h2>
         {% if selected_file.result == None %}
         <span id="queue-length-placeholder"></span>
         {% else %}

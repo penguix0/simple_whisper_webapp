@@ -17,3 +17,4 @@ ALLOWED_EXTENSIONS = {'mp3', 'm4a'}
 DATABASE_FILENAME = "database.db"
 MODEL_SIZE = environ.get('MODEL_SIZE', 'medium')
 USE_GPU = environ.get('USE_GPU', '').lower() == 'true' if environ.get('USE_GPU', '').lower() else False
+EXPIRE_TIME = int(environ.get('EXPIRE_TIME')) if environ.get('EXPIRE_TIME') else 10 # Days

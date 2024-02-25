@@ -38,7 +38,7 @@ logger.info(f'Creating database object from file at {app.config["SQLALCHEMY_DATA
 db = SQLAlchemy(app)
 
 from uuid import uuid4
-from datetime import datetime
+from datetime import datetime, timedelta
 
 class User(db.Model):
     id = db.Column(db.String, primary_key=True, default=str(uuid4()), nullable=False)
@@ -52,8 +52,13 @@ class AudioFile(db.Model):
     length = db.Column(db.Integer, nullable=False, default=0)
     progress = db.Column(db.Integer, nullable=False, default=0)
     created_at = db.Column(db.DateTime, default=datetime.now)
+    expiry_date = db.Column(db.DateTime, default=(datetime.now()+timedelta(days=app.config["EXPIRE_TIME"])))
 
     user_id = db.Column(db.String, db.ForeignKey('user.id'), nullable=False)
+
+    def get_expiry_date_as_str(self):
+        format_string = '%Y-%m-%d %H:%M:%S'
+        return self.expiry_date.strftime(format_string)
 
 
 logger.info("Resetting and creating database")
@@ -76,6 +81,7 @@ else:
 import threading
 from .whisper.que_worker import audio_transcription_worker 
 from .whisper.init_model import init_model
+from .database.expire_data_worker import data_expiry_worker
 from .helper import is_thread_running
 
 thread_name = "audio_transcription_thread"
@@ -90,7 +96,16 @@ if not is_thread_running(thread_name):
     audio_transcription_thread = threading.Thread(target=audio_transcription_worker, args=(model,), name=thread_name)
     audio_transcription_thread.start()
     logger.debug("Transcription thread started")
+else:
+    logger.info(f"Thread {thread_name} is already running.")
 
+thread_name = "data_expiry_thread"
+# Check if the thread is already running
+if not is_thread_running(thread_name):
+    logger.info("Spawning data expiry thread")
+    expiry_thread = threading.Thread(target=data_expiry_worker, args=(), name=thread_name)
+    expiry_thread.start()
+    logger.debug("Data expiry thread started")
 else:
     logger.info(f"Thread {thread_name} is already running.")
 

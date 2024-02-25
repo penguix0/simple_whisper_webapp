@@ -18,6 +18,7 @@ def get_file_queue_state():
     false_response = {"is_being_processed": "false","finished":"false", "progress":"0/0"}
     processing_response = {"is_being_processed": "true","finished":"false", "progress":"0/0"}
     true_response = {"is_being_processed": "false","finished":"true", "progress":"0/0"}
+
     if not file_id:
         return jsonify(false_response), 200
 
@@ -29,6 +30,7 @@ def get_file_queue_state():
     if first_item_in_queue.id == file_id and first_item_in_queue.result == None:
         processing_response["progress"] = f"{first_item_in_queue.progress}/{first_item_in_queue.length}"
         return jsonify(processing_response), 200
+        
     elif first_item_in_queue.id == file_id and not first_item_in_queue.result == None:
         return jsonify(true_response), 200
 

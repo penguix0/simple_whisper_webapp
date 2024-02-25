@@ -7,6 +7,7 @@ from pydub import AudioSegment
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileRequired, FileAllowed
 from wtforms import StringField, SubmitField, validators, HiddenField
+import datetime
 
 def get_audio_duration(file_path):
     try:
@@ -25,11 +26,12 @@ class UploadForm(FlaskForm):
     file = FileField('File', validators=[FileRequired(), FileAllowed(app.config["ALLOWED_EXTENSIONS"], 'Alleen audio bestanden zijn toegestaan!')])
 
 class SelectedFile:
-    def __init__(self, name, length, file_id, result):
+    def __init__(self, name, length, file_id, result, expiry_date):
         self.name = name
         self.length = length
         self.id = file_id
         self.result = result
+        self.expiry_date = expiry_date
 
 @app.route('/upload', methods=["GET", "POST"])
 def upload():
@@ -62,9 +64,11 @@ def upload():
 
     selected_file = None
     if selected_file_query:
-        selected_file = SelectedFile(selected_file_query.file_name, selected_file_query.length, selected_file_query.id, selected_file_query.result)
+        selected_file = SelectedFile(selected_file_query.file_name, selected_file_query.length, selected_file_query.id, selected_file_query.result, selected_file_query.get_expiry_date_as_str())
 
     files = AudioFile.query.filter_by(user_id=current_user_id).all()
+
+    expire_time = app.config["EXPIRE_TIME"]
 
     return render_template('upload.html', files=files, file_form=file_form, selected_file=selected_file)
 
