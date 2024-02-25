@@ -15,6 +15,7 @@ data
 # Ignore __pycache__ folders
 **/__pycache__
 
+**/venv
 
 **/database.db
 **.m4a
