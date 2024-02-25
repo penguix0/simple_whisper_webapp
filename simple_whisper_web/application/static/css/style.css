@@ -8,12 +8,13 @@
 }
 
 :root {
-    --dark-bg-1: #03120E;
-    --dark-bg-2: #1A1D1A;
-    --dark-bg-3: #26413C;
-    --dark-text-color-1: white;
-    --dark-text-color-1-dark: #b8e9e2;
-    --dark-text-color-2: white;
+    --dark-bg-1: #6f2586;
+    --dark-bg-2: #ffffff;
+    --dark-bg-3: #e9ab00;
+    --dark-text-color-1: rgb(0, 0, 0);
+    --dark-text-color-1-dark: #000000;
+    --dark-text-color-2: rgb(0, 0, 0);
+    --dark-button-color: #e9ab00;
 }
 
 body {
@@ -116,7 +117,7 @@ body {
     display: flex;
     align-items: center;
 
-    background-color: #67E0A1;
+    background-color: #ffc422;
     color: white;
     border-radius: 500px;
     font-size: 25pt;
@@ -128,7 +129,7 @@ body {
 }
 
 .add-item:hover {
-    background-color: #384240;
+    background-color: #ffd154;
     cursor: pointer;
 }
 
@@ -160,7 +161,7 @@ body {
     text-align: center;
     word-break: break-all;
 
-    border-left: 3px solid #26413C;
+    border-left: 3px solid var(--dark-bg-1);
     transition: 300ms;
 
     padding: 0 5vh;
@@ -176,7 +177,7 @@ body {
     flex-direction: row;
     justify-content: center;
 
-    background-color: #67E0A1;
+    background-color: var(--dark-button-color);
     color: white;
     border-radius: 500px;
     font-size: 20pt;
