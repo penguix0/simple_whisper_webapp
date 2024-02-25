@@ -6,7 +6,7 @@
 {% block body %}
 <div id="container">
     <div id="upload-container">
-        <h1>Uploaded files:</h1>
+        <h1>Geüploade Bestanden:</h1>
         <div id="prior-upload-container">
             {% for file in files%}
             <div class="upload-item" onclick="addQueryParam('selected_file', '{{ file.id }}')">
@@ -35,19 +35,19 @@
     <div id="result-container">
         {% if selected_file %}
         <h1>{{ selected_file.name }}</h1>
-            {% if selected_file.result == None %}
-            <span id="queue-length-placeholder"></span>
-            {% else %}
-            <div class="result-text-container">
-                <p id="result-text-container">{{ selected_file.result }}</p>
-            </div>
-            <span class="material-symbols-outlined" onclick="copyToClipboard()" id="copy-result">
-                content_copy
-            </span>
-            {% endif %}
+        {% if selected_file.result == None %}
+        <span id="queue-length-placeholder"></span>
+        {% else %}
+        <div class="result-text-container">
+            <p id="result-text-container">{{ selected_file.result }}</p>
+        </div>
+        <span class="material-symbols-outlined" onclick="copyToClipboard()" id="copy-result">
+            content_copy
+        </span>
+        {% endif %}
 
         {% else %}
-        <h1 style="word-break: normal;">Please select a file from the list on the left.</h1>
+        <h1 style="word-break: normal;">Selecteer alstublieft een bestand van de lijst links.</h1>
         {% endif %}
     </div>
 </div>
@@ -83,7 +83,7 @@
                 // Handle the error response if needed
                 console.error('Error removing file:', error);
             }
-        });
+        }); close
     }
     // Function to update que length
     function updateQueueLength() {
@@ -97,11 +97,11 @@
                     // Determine the appropriate text based on que_length
                     let queueText;
                     if (response.queue_length === 0) {
-                        queueText = 'Your the only one waiting, this file will be processed as soon as possible!';
+                        queueText = 'U bent de enige in de wachtrij, dit bestand zal zo snel mogelijk worden verwerkt!';
                     } else if (response.queue_length === 1) {
-                        queueText = 'There is currently one other file waiting in the queue.';
+                        queueText = 'U bent als volgende aan de beurt.';
                     } else {
-                        queueText = `There are currently ${response.queue_length} other files waiting in the queue.`;
+                        queueText = `Er zijn momenteel ${response.queue_length} andere bestanden in de wachtrij.`;
                     }
 
                     // Update the content with the determined text
@@ -136,14 +136,14 @@
                     if (isFinished && reload_on_finish) {
                         location.reload();
                         // Update the content with the determined text
-                        $('#queue-length-placeholder').text("File is processed, please reload the page.");
+                        $('#queue-length-placeholder').text("Bestand is verwerkt, herlaad alstublieft de pagina.");
                     } else if (isBeingProcessed) {
                         reload_on_finish = true;
-                        const queueStateText = 'This file is being processed. Currently at ' + progress + ' seconds.';
+                        const queueStateText = 'Dit bestand wordt momenteel verwerkt. Huidige status: ' + progress + ' seconden.';
 
                         // Update the content with the determined text
                         $('#queue-length-placeholder').text(queueStateText);
-                    } else {    
+                    } else {
                         updateQueueLength();
                     }
                 } else {
@@ -183,13 +183,34 @@
     // Set interval to update every 10 seconds (10000 milliseconds)
     setInterval(updateFileQueueStateOrLength, 5000);
 
-    function copyToClipboard() {
-        // Get the text field
-        var copyText = document.getElementById("result-text-container");
+    async function copyToClipboard() {
+        var textToCopy = document.getElementById("result-text-container").innerText;
 
-        // Copy the text inside the text field
-        navigator.clipboard.writeText(copyText.innerHTML);
-    } 
+        // Navigator clipboard api needs a secure context (https)
+        if (navigator.clipboard && window.isSecureContext) {
+            await navigator.clipboard.writeText(textToCopy);
+        } else {
+            // Use the 'out of viewport hidden text area' trick
+            const textArea = document.createElement("textarea");
+            textArea.value = textToCopy;
+
+            // Move textarea out of the viewport so it's not visible
+            textArea.style.position = "absolute";
+            textArea.style.left = "-999999px";
+
+            document.body.prepend(textArea);
+            textArea.select();
+
+            try {
+                document.execCommand('copy');
+            } catch (error) {
+                console.error(error);
+            } finally {
+                textArea.remove();
+            }
+        }
+    }
+
 </script>
 
 {% endblock %}

@@ -22,7 +22,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in app.config["ALLOWED_EXTENSIONS"]
 
 class UploadForm(FlaskForm):
-    file = FileField('File', validators=[FileRequired(), FileAllowed(app.config["ALLOWED_EXTENSIONS"], 'Only audio files are allowed!')])
+    file = FileField('File', validators=[FileRequired(), FileAllowed(app.config["ALLOWED_EXTENSIONS"], 'Alleen audio bestanden zijn toegestaan!')])
 
 class SelectedFile:
     def __init__(self, name, length, file_id, result):
